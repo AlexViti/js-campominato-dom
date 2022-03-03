@@ -13,6 +13,7 @@ difficultySelect.addEventListener ('change', playSetUp);
 let resultMessage = document.createElement('div');
 resultMessage.style = `
 	position: absolute;
+	display: none;
 	top: 0;
 	left: 0;
 	right: 0;
