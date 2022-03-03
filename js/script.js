@@ -2,19 +2,34 @@
 const gridContainer = document.querySelector('.grid-container');
 const btnPlay = document.getElementById('btn-play');
 const difficultySelect = document.getElementById('difficulty-select');
-const body = document.querySelector('body');
+const main = document.querySelector('main');
 const styleElement = document.querySelector('style');
 
-let youLooseElement;
 
 // Play start events
 btnPlay.addEventListener ('click', playSetUp); 
 difficultySelect.addEventListener ('change', playSetUp);
 
+let youLooseMessage = document.createElement('div');
+youLooseMessage.style = `
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	font-size: 30px;
+	color: red;
+	background-color: white;
+	padding: 1rem 0;
+	text-align: center;
+`;
+main.append(youLooseMessage);
+
 // Game setup
 function playSetUp() {
 
-	let youLooseFlag = false;
+	styleElement.innerHTML = '';
+	youLooseMessage.style.display = 'none';
+	let lostFlag = false;
 	let goodMoveCounter = 0;
 
 	// Remove the previous grid every time you press play
@@ -75,7 +90,7 @@ function playSetUp() {
 	function cellSelector() {
 		if (this.classList.contains('mine')) {
 			youLoose();
-		} else if(!youLooseFlag) {
+		} else if(!lostFlag) {
 			if (!this.classList.contains('cell-selected')) {
 				this.classList.add('cell-selected');
 				goodMoveCounter++;
@@ -89,8 +104,12 @@ function playSetUp() {
 				background-color: red;
 			}
 		`;
-		youLooseFlag = true;
-		
+		lostFlag = true;
+		youLooseMessage.innerHTML = `
+			Hai perso!
+			<span style="font-size: 20px; color: black;">Il tuo punteggio è di ${goodMoveCounter}</span>
+		`;
+		youLooseMessage.style.display = 'block';
 	}
 }
 

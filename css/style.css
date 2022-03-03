@@ -43,6 +43,7 @@ main {
 	background-color: var(--bg-green);
 	flex-grow: 1;
 	overflow-x: auto;
+	position: relative;
 }
 
 /* Header */
