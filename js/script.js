@@ -3,6 +3,7 @@ const gridContainer = document.querySelector('.grid-container');
 const btnPlay = document.getElementById('btn-play');
 const difficultySelect = document.getElementById('difficulty-select');
 const body = document.querySelector('body');
+const styleElement = document.querySelector('style');
 
 // Play start events
 btnPlay.addEventListener ('click', playSetUp); 
@@ -11,9 +12,12 @@ difficultySelect.addEventListener ('change', playSetUp);
 // Game setup
 function playSetUp() {
 
-	if (youLooseElement != undefined) {
-		body.removeChild(youLooseElement);
-	}
+	// if (youLooseElement != undefined) {
+	// 	body.removeChild(youLooseElement);
+	// }
+
+	let youLooseFlag = false;
+
 	// Remove the previous grid every time you press play
 	gridContainer.innerHTML = '';
 
@@ -47,7 +51,7 @@ function playSetUp() {
 				line-height: ${cellSize};
 			`;
 
-			cell.addEventListener('click', selectToggler);
+			cell.addEventListener('click', cellSelector);
 
 			cellArr.push(cell);
 			row.append(cell);
@@ -58,7 +62,7 @@ function playSetUp() {
 		gridContainer.append(row);
 	}
 
-	const numberOfMine = 10;
+	const numberOfMine = 16;
 	const minePosition = mineCreator(numberOfMine, difficulty);
 	
 	for (let i = 0; i < minePosition.length; i++) {
@@ -69,37 +73,47 @@ function playSetUp() {
 	Cell select class toggler when pressed
 	*/
 
-	function selectToggler() {
+	function cellSelector() {
 		if (this.classList.contains('mine')) {
 			youLoose();
-		} else {
-			this.classList.toggle('cell-selected');
+		} else if(!youLooseFlag) {
+			this.classList.add('cell-selected');
+			console.log(youLooseFlag);
 		}
 	}
-
+	
+	function youLoose() {
+		styleElement.innerHTML = `
+			.mine {
+				background-color: red;
+			}
+		`;
+		youLooseFlag = true;
+	}
 }
 
-let youLooseElement;
+// let youLooseElement;
 
-function youLoose() {
-	youLooseElement = document.createElement('div');
-	youLooseElement.classList.add('loose');
-	youLooseElement.style = `
-		position: absolute;
-		display: block;
-		height: 60vh;
-		line-height: 60vh;
-		text-align: center;
-		left: 0;
-		right: 0;
-		top: 50%;
-		transform: translate(0, -50%);
-		background :white;
-		color: red
-	`;
-	youLooseElement.innerText = 'Hai Perso';
-	body.append(youLooseElement);
-}
+// function youLoose() {
+// 	youLooseElement = document.createElement('div');
+// 	youLooseElement.classList.add('loose');
+// 	youLooseElement.style = `
+// 		position: absolute;
+// 		display: block;
+// 		height: 60vh;
+// 		line-height: 60vh;
+// 		text-align: center;
+// 		left: 0;
+// 		right: 0;
+// 		top: 50%;
+// 		transform: translate(0, -50%);
+// 		background :white;
+// 		color: red
+// 	`;
+// 	youLooseElement.innerText = 'Hai Perso';
+// 	body.append(youLooseElement);
+// }
+
 
 function randomInteger(min, max) {
 	const randomNumber = Math.floor(Math.random() * max + min);
