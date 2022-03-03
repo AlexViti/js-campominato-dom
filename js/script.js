@@ -10,26 +10,25 @@ const styleElement = document.querySelector('style');
 btnPlay.addEventListener ('click', playSetUp); 
 difficultySelect.addEventListener ('change', playSetUp);
 
-let youLooseMessage = document.createElement('div');
-youLooseMessage.style = `
+let resultMessage = document.createElement('div');
+resultMessage.style = `
 	position: absolute;
 	top: 0;
 	left: 0;
 	right: 0;
-	font-size: 30px;
-	color: red;
+	font-size: 20px;
 	background-color: white;
 	padding: 1rem 0;
 	text-align: center;
 `;
-main.append(youLooseMessage);
+main.append(resultMessage);
 
 // Game setup
 function playSetUp() {
 
 	styleElement.innerHTML = '';
-	youLooseMessage.style.display = 'none';
-	let lostFlag = false;
+	resultMessage.style.display = 'none';
+	let endFlag = false;
 	let goodMoveCounter = 0;
 
 	// Remove the previous grid every time you press play
@@ -77,10 +76,10 @@ function playSetUp() {
 	}
 
 	const numberOfMine = 16;
-	const minePosition = mineCreator(numberOfMine, difficulty);
+	const minesPosition = mineCreator(numberOfMine, difficulty);
 	
-	for (let i = 0; i < minePosition.length; i++) {
-		gridMatrix[minePosition[i][0]][minePosition[i][1]].classList.add('mine');
+	for (let i = 0; i < minesPosition.length; i++) {
+		gridMatrix[minesPosition[i][0]][minesPosition[i][1]].classList.add('mine');
 	}
 
 	/*
@@ -90,12 +89,23 @@ function playSetUp() {
 	function cellSelector() {
 		if (this.classList.contains('mine')) {
 			youLoose();
-		} else if(!lostFlag) {
+		} else if(!endFlag) {
 			if (!this.classList.contains('cell-selected')) {
 				this.classList.add('cell-selected');
 				goodMoveCounter++;
 			}
 		}
+		if (goodMoveCounter == difficulty * difficulty - numberOfMine) {
+			youWon();
+		}
+	}
+
+	function youWon() {
+		endFlag = true;
+		resultMessage.innerHTML = `
+			<span style="font-size: 30px; color: green;">Hai Vinto!</span> Il tuo punteggio è di ${goodMoveCounter}
+		`;
+		resultMessage.style.display = 'block';
 	}
 
 	function youLoose() {
@@ -104,35 +114,13 @@ function playSetUp() {
 				background-color: red;
 			}
 		`;
-		lostFlag = true;
-		youLooseMessage.innerHTML = `
-			Hai perso!
-			<span style="font-size: 20px; color: black;">Il tuo punteggio è di ${goodMoveCounter}</span>
+		endFlag = true;
+		resultMessage.innerHTML = `
+			<span style="font-size: 30px; color: red;">Hai perso!</span> Il tuo punteggio è di ${goodMoveCounter}
 		`;
-		youLooseMessage.style.display = 'block';
+		resultMessage.style.display = 'block';
 	}
 }
-
-// youLooseElement = document.createElement('div');
-// youLooseElement.classList.add('loose');
-// youLooseElement.style = `
-// 	position: absolute;
-// 	display: block;
-// 	height: 10rem;
-// 	line-height: 10rem;
-// 	font-size: 40px;
-// 	text-align: center;
-// 	left: 0;
-// 	right: 0;
-// 	bottom: 0;
-// 	background-color: red;
-// 	color: white
-// `;
-// youLooseElement.innerText = `
-// 	Hai Perso. <br>
-// 	Il tuo punteggio è di ${goodMoveCounter}
-// `;
-// body.append(youLooseElement);
 
 function randomInteger(min, max) {
 	const randomNumber = Math.floor(Math.random() * max + min);
@@ -140,15 +128,15 @@ function randomInteger(min, max) {
 }
 
 function mineCreator(numberOfMine, gridSize) {
-	const minePosition = [];
-	const minePositionStrings = [];
-	while (minePosition.length < numberOfMine) {
+	const minesPosition = [];
+	const minesPositionStrings = [];
+	while (minesPosition.length < numberOfMine) {
 		const rowIndex = randomInteger(0, gridSize);
 		const columnIndex = randomInteger(0, gridSize);
-		if (!minePositionStrings.includes(`${rowIndex}, ${columnIndex}`)) {
-			minePositionStrings.push(`${rowIndex}, ${columnIndex}`);
-			minePosition.push([rowIndex, columnIndex])
+		if (!minesPositionStrings.includes(`${rowIndex}, ${columnIndex}`)) {
+			minesPositionStrings.push(`${rowIndex}, ${columnIndex}`);
+			minesPosition.push([rowIndex, columnIndex])
 		}
 	}
-	return minePosition;
+	return minesPosition;
 }
