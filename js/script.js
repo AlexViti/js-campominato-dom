@@ -5,6 +5,8 @@ const difficultySelect = document.getElementById('difficulty-select');
 const body = document.querySelector('body');
 const styleElement = document.querySelector('style');
 
+let youLooseElement;
+
 // Play start events
 btnPlay.addEventListener ('click', playSetUp); 
 difficultySelect.addEventListener ('change', playSetUp);
@@ -12,11 +14,8 @@ difficultySelect.addEventListener ('change', playSetUp);
 // Game setup
 function playSetUp() {
 
-	// if (youLooseElement != undefined) {
-	// 	body.removeChild(youLooseElement);
-	// }
-
 	let youLooseFlag = false;
+	let goodMoveCounter = 0;
 
 	// Remove the previous grid every time you press play
 	gridContainer.innerHTML = '';
@@ -77,11 +76,13 @@ function playSetUp() {
 		if (this.classList.contains('mine')) {
 			youLoose();
 		} else if(!youLooseFlag) {
-			this.classList.add('cell-selected');
-			console.log(youLooseFlag);
+			if (!this.classList.contains('cell-selected')) {
+				this.classList.add('cell-selected');
+				goodMoveCounter++;
+			}
 		}
 	}
-	
+
 	function youLoose() {
 		styleElement.innerHTML = `
 			.mine {
@@ -89,31 +90,30 @@ function playSetUp() {
 			}
 		`;
 		youLooseFlag = true;
+		
 	}
 }
 
-// let youLooseElement;
-
-// function youLoose() {
-// 	youLooseElement = document.createElement('div');
-// 	youLooseElement.classList.add('loose');
-// 	youLooseElement.style = `
-// 		position: absolute;
-// 		display: block;
-// 		height: 60vh;
-// 		line-height: 60vh;
-// 		text-align: center;
-// 		left: 0;
-// 		right: 0;
-// 		top: 50%;
-// 		transform: translate(0, -50%);
-// 		background :white;
-// 		color: red
-// 	`;
-// 	youLooseElement.innerText = 'Hai Perso';
-// 	body.append(youLooseElement);
-// }
-
+// youLooseElement = document.createElement('div');
+// youLooseElement.classList.add('loose');
+// youLooseElement.style = `
+// 	position: absolute;
+// 	display: block;
+// 	height: 10rem;
+// 	line-height: 10rem;
+// 	font-size: 40px;
+// 	text-align: center;
+// 	left: 0;
+// 	right: 0;
+// 	bottom: 0;
+// 	background-color: red;
+// 	color: white
+// `;
+// youLooseElement.innerText = `
+// 	Hai Perso. <br>
+// 	Il tuo punteggio è di ${goodMoveCounter}
+// `;
+// body.append(youLooseElement);
 
 function randomInteger(min, max) {
 	const randomNumber = Math.floor(Math.random() * max + min);
