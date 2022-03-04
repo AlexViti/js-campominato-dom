@@ -164,7 +164,7 @@ function playSetUp() {
 		const mine = cellsArr[i].mine;
 		cellsArr[i].element.addEventListener('click', function() {
 			if (mine) {
-				youLoose();
+				endFlag = youLoose(score);
 			} else if (!endFlag) {
 				if (!this.classList.contains('cell-selected')){
 					score++;
@@ -173,29 +173,29 @@ function playSetUp() {
 				}
 			} 
 			if (score == cellsNumber - minesNumber) {
-				youWon();
+				endFlag = youWon(score);
 			}
 		});
 	}
+}
 
-	function youWon() {
-		endFlag = true;
-		resultMessage.innerHTML = `
-			<span style="font-size: 30px; color: green;">Hai Vinto!</span> Il tuo punteggio è di ${goodMoveCounter}
-		`;
-		resultMessage.style.display = 'block';
-	}
+function youWon(score) {
+	resultMessage.innerHTML = `
+		<span style="font-size: 30px; color: green;">Hai Vinto!</span> Il tuo punteggio è di ${score}
+	`;
+	resultMessage.style.display = 'block';
+	return true;
+}
 
-	function youLoose() {
-		styleElement.innerHTML = `
-			.mine {
-				background-color: red;
-			}
-		`;
-		endFlag = true;
-		resultMessage.innerHTML = `
-			<span style="font-size: 30px; color: red;">Hai perso!</span> Il tuo punteggio è di: ${score}
-		`;
-		resultMessage.style.display = 'block';
-	}
+function youLoose(score) {
+	styleElement.innerHTML = `
+		.mine {
+			background-color: red;
+		}
+	`;
+	resultMessage.innerHTML = `
+		<span style="font-size: 30px; color: red;">Hai perso!</span> Il tuo punteggio è di: ${score}
+	`;
+	resultMessage.style.display = 'block';
+	return true;
 }
