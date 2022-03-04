@@ -171,15 +171,21 @@ function playSetUp() {
 		const mine = cellsArr[i].mine;
 		cellsArr[i].element.addEventListener('contextmenu', function(e) {
 			e.preventDefault();
-			if (!endFlag) {
+			if (!endFlag && !this.classList.contains('cell-selected')) {
 				this.classList.toggle('cell-flag')
 			}
 		});
 		cellsArr[i].element.addEventListener('click', function() {
 			if (mine) {
-				endFlag = youLoose(score);
+				if (this.classList.contains('cell-flag')) {
+					this.classList.remove('cell-flag');
+				} else {
+					endFlag = youLoose(score);
+				}
 			} else if (!endFlag) {
-				if (!this.classList.contains('cell-selected')){
+				if (this.classList.contains('cell-flag')) {
+					this.classList.remove('cell-flag');
+				} else if (!this.classList.contains('cell-selected')){
 					score++;
 					this.classList.add('cell-selected');
 					this.innerHTML = minesNear;
