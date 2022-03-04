@@ -6,11 +6,12 @@ const difficultySelect = document.querySelector('select[name="difficulty"]');
 const rowsNumberEle = document.querySelector('input[name="rows"]');
 const columnsNumberEle = document.querySelector('input[name="columns"]');
 const styleElement = document.querySelector('style');
+let firstGame = true;
 
 let resultMessage = document.createElement('div');
 resultMessage.style = `
 	position: absolute;
-	display: none;
+	display: block;
 	top: 0;
 	left: 0;
 	right: 0;
@@ -19,12 +20,6 @@ resultMessage.style = `
 	padding: 1rem 0;
 	text-align: center;
 `;
-main.append(resultMessage);
-
-function randomInt(min, max) {
-	const randomNumber = Math.floor(Math.random() * max + min);
-	return randomNumber;
-}
 
 function Cell(index, columns, element) {
 	this.row = Math.floor(index / columns);
@@ -48,10 +43,10 @@ function gridGenerator(rows, columns, cellsArr) {
 	let index = 0;
 	for (let i = 0; i < rows; i++) {
 		const cellsRow = [];
-
+		
 		const row = document.createElement('div');
 		row.classList.add('d-flex');
-
+		
 		for (let j = 0; j < columns; j++) {
 			row.append(cellsArr[index].element);
 			cellsRow.push(cellsArr[index]);
@@ -60,15 +55,15 @@ function gridGenerator(rows, columns, cellsArr) {
 		gridContainer.append(row);
 		cellsMatrix.push(cellsRow);
 	}
-
+	
 	for (let i = 0; i < columns; i++) {
 		cellsMatrix[0][i].element.style.borderTop = `var(--cell-border)`;
 	}
-
+	
 	for (let i = 0; i < rows; i++) {
 		cellsMatrix[i][0].element.style.borderLeft = `var(--cell-border)`;
 	}
-
+	
 	return cellsMatrix;
 }
 
@@ -77,13 +72,14 @@ function cellEleCreator(columns) {
 	const cellEle = document.createElement('div');
 	cellEle.className = 'd-inline-block text-center cell';
 	cellEle.style = `
-		width: ${cellSize};
-		height: ${cellSize}; 
-		line-height: ${cellSize};
+	width: ${cellSize};
+	height: ${cellSize}; 
+	line-height: ${cellSize};
 	`;
 	return cellEle;
 }
 
+// Mines managment
 function mineCreator(minesNumber, cellsNumber) {
 	const minesPosition = [];
 	while (minesPosition.length < minesNumber) {
@@ -97,7 +93,7 @@ function mineCreator(minesNumber, cellsNumber) {
 
 function mineAssigner(cellsArr, minesPosition) {
 	const minesArr = [];
-
+	
 	for (let i = 0; i < minesPosition.length; i++) {
 		cellsArr[minesPosition[i]].mine = true;
 		cellsArr[minesPosition[i]].element.classList.add('mine');
@@ -143,22 +139,30 @@ btnPlay.addEventListener ('click', playSetUp);
 difficultySelect.addEventListener ('change', playSetUp);
 
 function playSetUp() {
+	// Reset
+	if (!firstGame) {
+		main.removeChild(resultMessage);
+	}
+	firstGame = false;
 	let endFlag = false;
 	gridContainer.innerHTML = '';
 	let score = 0;
-	resultMessage.innerHTML = '';
 	styleElement.innerHTML = '';
+	
+	// Variables from inputs
 	const columns = parseInt(columnsNumberEle.value);
 	const rows = parseInt(rowsNumberEle.value);
 	const cellsNumber = rows * columns;
 	const minesNumber = parseInt(difficultySelect.value);
 	
+	// Cells and mines generation
 	const cellsArr = cellsGenerator(cellsNumber, columns);
 	const minesPosition = mineCreator(minesNumber, cellsNumber);
 	const minesArr = mineAssigner(cellsArr, minesPosition);
 	const gridMatrix = gridGenerator(rows, columns, cellsArr);
 	minesNear(minesArr, gridMatrix);
-
+	
+	// Cell click events
 	for (let i = 0; i < cellsArr.length; i++) {
 		const minesNear = cellsArr[i].minesNear;
 		const mine = cellsArr[i].mine;
@@ -179,23 +183,30 @@ function playSetUp() {
 	}
 }
 
+// End game
 function youWon(score) {
 	resultMessage.innerHTML = `
-		<span style="font-size: 30px; color: green;">Hai Vinto!</span> Il tuo punteggio è di ${score}
+	<span style="font-size: 30px; color: green;">Hai Vinto!</span> Il tuo punteggio è di ${score}
 	`;
-	resultMessage.style.display = 'block';
+	main.append(resultMessage);
 	return true;
 }
 
 function youLoose(score) {
 	styleElement.innerHTML = `
-		.mine {
-			background-color: red;
-		}
+	.mine {
+		background-color: red;
+	}
 	`;
 	resultMessage.innerHTML = `
-		<span style="font-size: 30px; color: red;">Hai perso!</span> Il tuo punteggio è di: ${score}
+	<span style="font-size: 30px; color: red;">Hai perso!</span> Il tuo punteggio è di: ${score}
 	`;
-	resultMessage.style.display = 'block';
+	main.append(resultMessage);
 	return true;
+}
+
+// Math functions
+function randomInt(min, max) {
+	const randomNumber = Math.floor(Math.random() * max + min);
+	return randomNumber;
 }
