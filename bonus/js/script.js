@@ -6,7 +6,6 @@ const difficultySelect = document.querySelector('select[name="difficulty"]');
 const rowsNumberEle = document.querySelector('input[name="rows"]');
 const columnsNumberEle = document.querySelector('input[name="columns"]');
 const styleElement = document.querySelector('style');
-let firstGame = true;
 
 // Result message div creation
 let resultMessage = document.createElement('div');
@@ -143,10 +142,9 @@ difficultySelect.addEventListener ('change', playSetUp);
 // Game function
 function playSetUp() {
 	// Reset
-	if (!firstGame) {
+	if (main.contains(resultMessage)) {
 		main.removeChild(resultMessage);
 	}
-	firstGame = false;
 	let endFlag = false;
 	gridContainer.innerHTML = '';
 	let score = 0;
