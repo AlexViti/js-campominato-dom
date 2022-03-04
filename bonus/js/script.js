@@ -172,7 +172,7 @@ function playSetUp() {
 		cellsArr[i].element.addEventListener('contextmenu', function(e) {
 			e.preventDefault();
 			if (!endFlag) {
-				this.innerHTML = `<img src="img/logo.png" class="img-fluid w-75">`
+				this.classList.toggle('cell-flag')
 			}
 		});
 		cellsArr[i].element.addEventListener('click', function() {
