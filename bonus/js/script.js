@@ -6,41 +6,121 @@ const difficultySelect = document.querySelector('select[name="difficulty"]');
 const rowsNumberEle = document.querySelector('input[name="rows"]');
 const columnsNumberEle = document.querySelector('input[name="columns"]');
 
-function Cell(index, column) {
-	this.row = Math.ceil(index / column);
-	this.column = index - (this.row * column) + column;
-	this.mine = false;
-}
-
-function cellsGenerator(cellsNumber, columnNumber) {
-	const cellsArr = []
-	for (let i = 1; i <= cellsNumber; i++) {
-		const cell = new Cell(i, columnNumber);
-		cellsArr.push(cell);
-	}
-	return cellsArr;
-}
-
-function mineCreator(minesNumber, cellsNumber) {
-	const mines = [];
-	while (mines.length < minesNumber) {
-		const randomNumber = randomInt(0, cellsNumber);
-		if (!mines.includes(randomNumber)) {
-			mines.push(randomNumber);
-		}
-	}
-	return mines;
-}
-
-function mineAssigner(cellArr, mineArr) {
-	
-}
-
 function randomInt(min, max) {
 	const randomNumber = Math.floor(Math.random() * max + min);
 	return randomNumber;
 }
 
+function Cell(index, columns, element) {
+	this.row = Math.floor(index / columns);
+	this.column = index - this.row * columns;
+	this.mine = false;
+	this.element = element;
+	this.minesNear = 0;
+}
+
+function cellsGenerator(cellsNumber, columnNumber) {
+	const cellsArr = []
+	for (let i = 0; i < cellsNumber; i++) {
+		const cell = new Cell(i, columnNumber, cellEleCreator(columnNumber));
+		cellsArr.push(cell);
+	}
+	return cellsArr;
+}
+
+function gridGenerator(rows, columns, cellsArr) {
+	const cellsMatrix = [];
+	let index = 0;
+	for (let i = 0; i < rows; i++) {
+		const cellsRow = [];
+
+		const row = document.createElement('div');
+		row.classList.add('d-flex');
+
+		for (let j = 0; j < columns; j++) {
+			row.append(cellsArr[index].element);
+			cellsRow.push(cellsArr[index]);
+			index++;
+		}
+		gridContainer.append(row);
+		cellsMatrix.push(cellsRow);
+	}
+
+	for (let i = 0; i < columns; i++) {
+		cellsMatrix[0][i].element.style.borderTop = `var(--cell-border)`;
+	}
+
+	for (let i = 0; i < rows; i++) {
+		cellsMatrix[i][0].element.style.borderLeft = `var(--cell-border)`;
+	}
+
+	return cellsMatrix;
+}
+
+function cellEleCreator(columns) {
+	const cellSize = `calc(var(--grid-size) / ${columns})`;
+	const cellEle = document.createElement('div');
+	cellEle.className = 'd-inline-block text-center cell';
+	cellEle.style = `
+		width: ${cellSize};
+		height: ${cellSize}; 
+		line-height: ${cellSize};
+	`;
+	cellEle.addEventListener('click', cellClick);
+	return cellEle;
+}
+
+function cellClick() {
+	this.classList.add('cell-selected');
+}
+
+function mineCreator(minesNumber, cellsNumber) {
+	const minesPosition = [];
+	while (minesPosition.length < minesNumber) {
+		const randomNumber = randomInt(0, cellsNumber);
+		if (!minesPosition.includes(randomNumber)) {
+			minesPosition.push(randomNumber);
+		}
+	}
+	return minesPosition;
+}
+
+function minesNear(minesArr, cellsMatrix) {
+	for (let i = 0; i < minesArr.length; i++) {
+		if (minesArr[i].row != 1) {
+			cellsMatrix[minesArr[i].row - 2][minesArr[i].column - 1].minesNear++;
+	
+		}
+	}
+}
+
+function mineAssigner(cellsArr, minesPosition) {
+	const minesArr = [];
+
+	for (let i = 0; i < minesPosition.length; i++) {
+		cellsArr[minesPosition[i]].mine = true;
+		minesArr.push(cellsArr[minesPosition[i]]);
+	}
+	return minesArr;
+}
+
+
+btnPlay.addEventListener ('click', playSetUp);
+difficultySelect.addEventListener ('change', playSetUp);
+
+function playSetUp() {
+	gridContainer.innerHTML = '';
+	const columns = parseInt(columnsNumberEle.value);
+	const rows = parseInt(rowsNumberEle.value);
+	const cellsNumber = rows * columns;
+	const minesNumber = parseInt(difficultySelect.value);
+	
+	const cellsArr = cellsGenerator(cellsNumber, columns);
+	const minesPosition = mineCreator(minesNumber, cellsNumber);
+	const minesArr = mineAssigner(cellsArr, minesPosition);
+	const gridMatrix = gridGenerator(rows, columns, cellsArr);
+	// minesNear(minesArr, gridMatrix);
+}
 /*
 
 // Play start events
@@ -49,7 +129,7 @@ difficultySelect.addEventListener ('change', playSetUp);
 
 let resultMessage = document.createElement('div');
 resultMessage.style = `
-	position: absolute;
+position: absolute;
 	display: none;
 	top: 0;
 	left: 0;

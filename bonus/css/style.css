@@ -53,8 +53,11 @@ main {
 }
 
 select {
-	width: 120px;
 	cursor: pointer;
+}
+
+input[type="number"] {
+	width: 2.5rem;
 }
 
 /* Cells */
