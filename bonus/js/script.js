@@ -8,6 +8,7 @@ const columnsNumberEle = document.querySelector('input[name="columns"]');
 const styleElement = document.querySelector('style');
 let firstGame = true;
 
+// Result message div creation
 let resultMessage = document.createElement('div');
 resultMessage.style = `
 	position: absolute;
@@ -21,6 +22,7 @@ resultMessage.style = `
 	text-align: center;
 `;
 
+// Cells Functions
 function Cell(index, columns, element) {
 	this.row = Math.floor(index / columns);
 	this.column = index - this.row * columns;
@@ -138,6 +140,7 @@ function minesNear(minesArr, cellsMatrix) {
 btnPlay.addEventListener ('click', playSetUp);
 difficultySelect.addEventListener ('change', playSetUp);
 
+// Game function
 function playSetUp() {
 	// Reset
 	if (!firstGame) {
@@ -166,6 +169,12 @@ function playSetUp() {
 	for (let i = 0; i < cellsArr.length; i++) {
 		const minesNear = cellsArr[i].minesNear;
 		const mine = cellsArr[i].mine;
+		cellsArr[i].element.addEventListener('contextmenu', function(e) {
+			e.preventDefault();
+			if (!endFlag) {
+				this.innerHTML = `<img src="img/logo.png" class="img-fluid w-75">`
+			}
+		});
 		cellsArr[i].element.addEventListener('click', function() {
 			if (mine) {
 				endFlag = youLoose(score);
