@@ -87,11 +87,37 @@ function mineCreator(minesNumber, cellsNumber) {
 
 function minesNear(minesArr, cellsMatrix) {
 	for (let i = 0; i < minesArr.length; i++) {
-		if (minesArr[i].row != 1) {
-			cellsMatrix[minesArr[i].row - 2][minesArr[i].column - 1].minesNear++;
-	
+		const row = minesArr[i].row;
+		const rowMax = cellsMatrix.length - 1;
+		const column = minesArr[i].column;
+		const columnMax = cellsMatrix[0].length - 1;
+		if (row != 0 && column != 0) {
+			cellsMatrix[row - 1][column - 1].minesNear++;
+		}
+		if (row != 0) {
+			cellsMatrix[row - 1][column].minesNear++;	
+		}
+		if (row != 0 && column < columnMax) {
+			cellsMatrix[row - 1][column + 1].minesNear++;
+		}
+		if (column != 0) {
+			cellsMatrix[row][column - 1].minesNear++;
+		}
+		if (column < columnMax) {
+			cellsMatrix[row][column + 1].minesNear++;
+		}
+		if (row < rowMax && column != 0) {
+			cellsMatrix[row + 1][column - 1].minesNear++;
+		}
+		if (row < rowMax) {
+			cellsMatrix[row + 1][column].minesNear++;
+		}
+		if (row < rowMax && column < columnMax) {
+			cellsMatrix[row + 1][column + 1].minesNear++;
 		}
 	}
+
+	console.log(cellsMatrix);
 }
 
 function mineAssigner(cellsArr, minesPosition) {
@@ -119,7 +145,7 @@ function playSetUp() {
 	const minesPosition = mineCreator(minesNumber, cellsNumber);
 	const minesArr = mineAssigner(cellsArr, minesPosition);
 	const gridMatrix = gridGenerator(rows, columns, cellsArr);
-	// minesNear(minesArr, gridMatrix);
+	minesNear(minesArr, gridMatrix);
 }
 /*
 
