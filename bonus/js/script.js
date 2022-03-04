@@ -5,6 +5,21 @@ const btnPlay = document.getElementById('btn-play');
 const difficultySelect = document.querySelector('select[name="difficulty"]');
 const rowsNumberEle = document.querySelector('input[name="rows"]');
 const columnsNumberEle = document.querySelector('input[name="columns"]');
+const styleElement = document.querySelector('style');
+
+let resultMessage = document.createElement('div');
+resultMessage.style = `
+	position: absolute;
+	display: none;
+	top: 0;
+	left: 0;
+	right: 0;
+	font-size: 20px;
+	background-color: white;
+	padding: 1rem 0;
+	text-align: center;
+`;
+main.append(resultMessage);
 
 function randomInt(min, max) {
 	const randomNumber = Math.floor(Math.random() * max + min);
@@ -15,8 +30,8 @@ function Cell(index, columns, element) {
 	this.row = Math.floor(index / columns);
 	this.column = index - this.row * columns;
 	this.mine = false;
-	this.element = element;
 	this.minesNear = 0;
+	this.element = element;
 }
 
 function cellsGenerator(cellsNumber, columnNumber) {
@@ -66,12 +81,7 @@ function cellEleCreator(columns) {
 		height: ${cellSize}; 
 		line-height: ${cellSize};
 	`;
-	cellEle.addEventListener('click', cellClick);
 	return cellEle;
-}
-
-function cellClick() {
-	this.classList.add('cell-selected');
 }
 
 function mineCreator(minesNumber, cellsNumber) {
@@ -83,6 +93,17 @@ function mineCreator(minesNumber, cellsNumber) {
 		}
 	}
 	return minesPosition;
+}
+
+function mineAssigner(cellsArr, minesPosition) {
+	const minesArr = [];
+
+	for (let i = 0; i < minesPosition.length; i++) {
+		cellsArr[minesPosition[i]].mine = true;
+		cellsArr[minesPosition[i]].element.classList.add('mine');
+		minesArr.push(cellsArr[minesPosition[i]]);
+	}
+	return minesArr;
 }
 
 function minesNear(minesArr, cellsMatrix) {
@@ -116,20 +137,7 @@ function minesNear(minesArr, cellsMatrix) {
 			cellsMatrix[row + 1][column + 1].minesNear++;
 		}
 	}
-
-	console.log(cellsMatrix);
 }
-
-function mineAssigner(cellsArr, minesPosition) {
-	const minesArr = [];
-
-	for (let i = 0; i < minesPosition.length; i++) {
-		cellsArr[minesPosition[i]].mine = true;
-		minesArr.push(cellsArr[minesPosition[i]]);
-	}
-	return minesArr;
-}
-
 
 btnPlay.addEventListener ('click', playSetUp);
 difficultySelect.addEventListener ('change', playSetUp);
@@ -146,6 +154,32 @@ function playSetUp() {
 	const minesArr = mineAssigner(cellsArr, minesPosition);
 	const gridMatrix = gridGenerator(rows, columns, cellsArr);
 	minesNear(minesArr, gridMatrix);
+
+	for (let i = 0; i < cellsArr.length; i++) {
+		const minesNear = cellsArr[i].minesNear;
+		const mine = cellsArr[i].mine;
+		cellsArr[i].element.addEventListener('click', function() {
+			if (mine) {
+				youLoose();
+			} else {
+				this.classList.add('cell-selected');
+				this.innerHTML = minesNear;
+			}
+		});
+	}
+}
+
+function youLoose() {
+	styleElement.innerHTML = `
+		.mine {
+			background-color: red;
+		}
+	`;
+	endFlag = true;
+	resultMessage.innerHTML = `
+		<span style="font-size: 30px; color: red;">Hai perso!</span>
+	`;
+	resultMessage.style.display = 'block';
 }
 /*
 
